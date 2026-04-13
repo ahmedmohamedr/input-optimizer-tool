@@ -1,52 +1,66 @@
-import pygame
+import json
+from typing import Any, Dict, List
 
-class InputHandler:
+
+def load_keybindings(file_path: str) -> Dict[str, str]:
     """
-    A class to handle user inputs for the game. This class uses
-    the Pygame library to capture keyboard and mouse events. The
-    captured inputs can then be used to control game actions.
+    Load key bindings from a JSON file.
+
+    Args:
+        file_path (str): The path to the JSON file containing key bindings.
+
+    Returns:
+        Dict[str, str]: A dictionary mapping action names to key bindings.
+
+    Raises:
+        FileNotFoundError: If the specified file does not exist.
+        json.JSONDecodeError: If the file contents cannot be parsed as JSON.
     """
+    with open(file_path, 'r') as file:
+        keybindings = json.load(file)
+    return keybindings
 
-    def __init__(self):
-        """
-        Initialize the InputHandler class.
-        Here we initialize the Pygame library and create a dictionary
-        to keep track of currently pressed keys.
-        """
-        pygame.init()  # Initialize all Pygame modules
-        self.keys_pressed = {}  # Dictionary to store keys' states
 
-    def update(self) -> None:
-        """
-        Update the state of the input handler by capturing all
-        events that happen since the last frame. This method updates
-        the keys_pressed dictionary based on the current state of
-        the keyboard.
-        """
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                # When a key is pressed, set its state to True
-                self.keys_pressed[event.key] = True
-            elif event.type == pygame.KEYUP:
-                # When a key is released, set its state to False
-                if event.key in self.keys_pressed:
-                    self.keys_pressed[event.key] = False
+def save_keybindings(file_path: str, keybindings: Dict[str, str]) -> None:
+    """
+    Save key bindings to a JSON file.
 
-    def is_key_pressed(self, key: int) -> bool:
-        """
-        Check if a particular key is currently pressed.
+    Args:
+        file_path (str): The path to the JSON file where key bindings will be saved.
+        keybindings (Dict[str, str]): A dictionary mapping action names to key bindings.
 
-        Parameters:
-            key (int): The Pygame key constant for the key to check.
+    Raises:
+        IOError: If the file cannot be opened for writing.
+    """
+    with open(file_path, 'w') as file:
+        json.dump(keybindings, file, indent=4)
 
-        Returns:
-            bool: True if the key is pressed, False otherwise.
-        """
-        return self.keys_pressed.get(key, False)
 
-    def quit(self) -> None:
-        """
-        Properly quit the Pygame library by uninitializing all modules.
-        This should be called when the game is exiting.
-        """
-        pygame.quit()
+def get_keybinding(action: str, keybindings: Dict[str, str]) -> str:
+    """
+    Retrieve the key binding for a given action.
+
+    Args:
+        action (str): The action for which to retrieve the key binding.
+        keybindings (Dict[str, str]): A dictionary mapping action names to key bindings.
+
+    Returns:
+        str: The key binding for the specified action.
+
+    Raises:
+        KeyError: If the action does not have an assigned key binding.
+    """
+    return keybindings[action]
+
+
+def list_actions(keybindings: Dict[str, str]) -> List[str]:
+    """
+    List all actions that have key bindings assigned.
+
+    Args:
+        keybindings (Dict[str, str]): A dictionary mapping action names to key bindings.
+
+    Returns:
+        List[str]: A list of action names.
+    """
+    return list(keybindings.keys())
