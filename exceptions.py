@@ -1,32 +1,34 @@
 class InputOptimizerError(Exception):
-    """Base class for all exceptions raised by the input optimizer."""
+    """Base class for exceptions in this module."""
     pass
 
 class InvalidInputError(InputOptimizerError):
-    """Raised when provided input is invalid."""
-    def __init__(self, message):
-        super().__init__(message)
+    """Raised when input is invalid."""
+    def __init__(self, input_value):
+        self.input_value = input_value
+        self.message = f'Invalid input: {input_value}'
+        super().__init__(self.message)
+
+class OptimizationError(InputOptimizerError):
+    """Raised when optimization fails."""
+    def __init__(self, algorithm, reason):
+        self.algorithm = algorithm
+        self.reason = reason
+        self.message = f'Optimization failed on {algorithm}: {reason}'
+        super().__init__(self.message)
 
 class ConfigurationError(InputOptimizerError):
-    """Raised for configuration related errors."""
-    def __init__(self, message):
-        super().__init__(message)
-        self.message = message
+    """Raised when configuration is invalid."""
+    def __init__(self, config_file):
+        self.config_file = config_file
+        self.message = f'Configuration error in: {config_file}'
+        super().__init__(self.message)
 
-    def __str__(self):
-        return f'ConfigurationError: {self.message}'
+# Example usage function
 
-class ProcessingError(InputOptimizerError):
-    """Raised during input processing errors."""
-    def __init__(self, message, input_data):
-        super().__init__(message)
-        self.input_data = input_data
-
-    def __str__(self):
-        return f'ProcessingError: {self.message} | Input: {self.input_data}'
-
-# Usage example
-# try:
-#     raise InvalidInputError('Input cannot be empty')
-# except InputOptimizerError as e:
-#     print(e)
+def handle_input(value):
+    if not isinstance(value, (int, float)):
+        raise InvalidInputError(value)
+    if value < 0:
+        raise OptimizationError('negative_check', 'Input cannot be negative')
+    return value * 2
