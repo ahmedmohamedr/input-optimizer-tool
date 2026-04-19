@@ -1,35 +1,34 @@
 import re
 
-class InputValidationError(Exception):
-    pass
-
 class InputValidator:
-    def __init__(self, valid_commands):
-        self.valid_commands = valid_commands
-        self.command_pattern = re.compile(r'^[a-zA-Z0-9_]+$')
+    @staticmethod
+    def is_valid_username(username):
+        return bool(re.match('^[A-Za-z0-9_]{3,15}$', username))
 
-    def validate_command(self, command):
-        if command not in self.valid_commands:
-            raise InputValidationError(f'Invalid command: {command}')
-        if not self.command_pattern.match(command):
-            raise InputValidationError(f'Command contains invalid characters: {command}')
+    @staticmethod
+    def is_valid_score(score):
+        return isinstance(score, int) and 0 <= score <= 100
+
+    @staticmethod
+    def is_valid_game_mode(mode):
+        valid_modes = ['singleplayer', 'multiplayer', 'co-op']
+        return mode in valid_modes
+
+    @staticmethod
+    def validate_user_data(user_data):
+        if not InputValidator.is_valid_username(user_data.get('username', '')):
+            raise ValueError('Invalid username! Must be 3-15 characters long, alphanumeric or underscore.\n')
+        if not InputValidator.is_valid_score(user_data.get('score', -1)):
+            raise ValueError('Invalid score! Must be an integer between 0 and 100.\n')
+        if not InputValidator.is_valid_game_mode(user_data.get('game_mode', '')):
+            raise ValueError('Invalid game mode! Must be one of: singleplayer, multiplayer, co-op.\n')
         return True
 
-    def validate_input(self, user_input):
-        commands = user_input.split()  
-        for command in commands:
-            self.validate_command(command)
-        return True
-
+# Example Usage
 if __name__ == '__main__':
-    valid_commands = ['move', 'jump', 'shoot']
-    validator = InputValidator(valid_commands)
     try:
-        validator.validate_input('move jump invalid_command')
-    except InputValidationError as e:
-        print(e)
-    try:
-        validator.validate_input('move jump shoot')
-        print('All commands are valid!')
-    except InputValidationError as e:
+        user_data = {'username': 'Player1', 'score': 95, 'game_mode': 'multiplayer'}
+        InputValidator.validate_user_data(user_data)
+        print('User data is valid!')
+    except ValueError as e:
         print(e)
