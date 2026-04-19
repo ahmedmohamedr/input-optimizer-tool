@@ -1,30 +1,36 @@
-import json
 import os
 
-def load_config(file_path='config.json', defaults=None):
-    if defaults is None:
-        defaults = {}
-    
-    if not os.path.exists(file_path):
-        print(f'{file_path} not found; using defaults.')
-        return defaults
-    
-    with open(file_path, 'r') as config_file:
-        try:
-            user_config = json.load(config_file)
-        except json.JSONDecodeError:
-            print('Error decoding JSON; using defaults.')
-            return defaults
-    
-    combined_config = {**defaults, **user_config}
-    return combined_config
+class Config:
+    def __init__(self):
+        self.settings = {
+            'resolution': '1920x1080',
+            'fullscreen': True,
+            'volume': 75,
+            'brightness': 50,
+            'language': 'en'
+        }
 
-# Example usage
-if __name__ == '__main__':
-    default_settings = {
-        'resolution': '1920x1080',
-        'volume': 70,
-        'difficulty': 'normal'
-    }
-    config = load_config(defaults=default_settings)
-    print(config)
+    def load_settings(self):
+        env_file = os.path.join(os.getcwd(), '.env')
+        if os.path.exists(env_file):
+            with open(env_file) as f:
+                for line in f:
+                    key, value = line.strip().split('=')
+                    if key in self.settings:
+                        self.settings[key] = self.parse_value(value)
+
+    @staticmethod
+    def parse_value(value):
+        if value.isdigit():
+            return int(value)
+        elif value.lower() in ['true', 'false']:
+            return value.lower() == 'true'
+        return value
+
+    def save_settings(self):
+        with open(os.path.join(os.getcwd(), '.env'), 'w') as f:
+            for key, value in self.settings.items():
+                f.write(f'{key}={value}\n')
+
+config = Config()
+config.load_settings()
