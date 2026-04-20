@@ -1,41 +1,31 @@
-import os
 import json
-import logging
+import random
 
-class InputOptimizerProcessor:
-    def __init__(self, config_file):
-        self.config = self.load_config(config_file)
-        self.logger = self.setup_logger()
+def optimize_input(user_inputs):
+    optimized = {key: optimize_value(value) for key, value in user_inputs.items()}
+    return json.dumps(optimized)
 
-    def load_config(self, filepath):
-        if not os.path.exists(filepath):
-            raise FileNotFoundError(f"Config file not found: {filepath}")
-        with open(filepath, 'r') as file:
-            return json.load(file)
 
-    def setup_logger(self):
-        logger = logging.getLogger(__name__)
-        handler = logging.StreamHandler()
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
-        logger.setLevel(logging.INFO)
-        return logger
+def optimize_value(value):
+    if isinstance(value, list):
+        return random.sample(value, min(len(value), 3))
+    elif isinstance(value, dict):
+        return {k: optimize_value(v) for k, v in value.items()}
+    return value
 
-    def process_input(self, input_data):
-        self.logger.info('Processing input data...')
-        processed = self.optimize_input(input_data)
-        self.logger.info('Input data processed successfully')
-        return processed
 
-    def optimize_input(self, input_data):
-        if not isinstance(input_data, dict):
-            self.logger.error('Invalid input: expected a dictionary')
-            raise ValueError('Input must be a dictionary')
-        return {k: v for k, v in input_data.items() if v is not None}
+def handle_input(user_inputs):
+    try:
+        optimized_data = optimize_input(user_inputs)
+        print("Optimized Input:", optimized_data)
+    except Exception as e:
+        print(f"Error processing input: {e}")
+
 
 if __name__ == '__main__':
-    processor = InputOptimizerProcessor('config.json')
-    sample_input = {'resolution': '1920x1080', 'fullscreen': True, 'volume': None}
-    optimized_input = processor.process_input(sample_input)
-    print(optimized_input)
+    inputs = {
+        'settings': ['low', 'medium', 'high'],
+        'resolution': {'width': 1920, 'height': 1080},
+        'controls': ['keyboard', 'mouse', 'gamepad']
+    }
+    handle_input(inputs)
