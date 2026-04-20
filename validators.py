@@ -1,34 +1,34 @@
 import re
 
-class InputValidator:
+class GameDataValidator:
     @staticmethod
-    def is_valid_username(username):
-        return bool(re.match('^[A-Za-z0-9_]{3,15}$', username))
-
+    def validate_player_name(name):
+        if not (1 <= len(name) <= 15):
+            raise ValueError("Player name must be between 1 and 15 characters.")
+        if not re.match('^[a-zA-Z0-9_]+$', name):
+            raise ValueError("Player name can only contain alphanumeric characters and underscores.")
+        return True
+    
     @staticmethod
-    def is_valid_score(score):
-        return isinstance(score, int) and 0 <= score <= 100
-
+    def validate_score(score):
+        if not isinstance(score, int) or score < 0:
+            raise ValueError("Score must be a non-negative integer.")
+        return True
+    
     @staticmethod
-    def is_valid_game_mode(mode):
-        valid_modes = ['singleplayer', 'multiplayer', 'co-op']
-        return mode in valid_modes
-
+    def validate_level(level):
+        if not (1 <= level <= 100):
+            raise ValueError("Level must be between 1 and 100.")
+        return True
+    
     @staticmethod
-    def validate_user_data(user_data):
-        if not InputValidator.is_valid_username(user_data.get('username', '')):
-            raise ValueError('Invalid username! Must be 3-15 characters long, alphanumeric or underscore.\n')
-        if not InputValidator.is_valid_score(user_data.get('score', -1)):
-            raise ValueError('Invalid score! Must be an integer between 0 and 100.\n')
-        if not InputValidator.is_valid_game_mode(user_data.get('game_mode', '')):
-            raise ValueError('Invalid game mode! Must be one of: singleplayer, multiplayer, co-op.\n')
+    def validate_game_data(player_name, score, level):
+        GameDataValidator.validate_player_name(player_name)
+        GameDataValidator.validate_score(score)
+        GameDataValidator.validate_level(level)
         return True
 
-# Example Usage
-if __name__ == '__main__':
-    try:
-        user_data = {'username': 'Player1', 'score': 95, 'game_mode': 'multiplayer'}
-        InputValidator.validate_user_data(user_data)
-        print('User data is valid!')
-    except ValueError as e:
-        print(e)
+# Example usage
+# validator = GameDataValidator()
+# validator.validate_game_data('Player1', 150, 10)  # Should pass
+# validator.validate_game_data('Bad Name!', 150, 10)  # Should raise an error
