@@ -2,33 +2,29 @@ class InputOptimizerError(Exception):
     """Base class for exceptions in this module."""
     pass
 
-class InvalidInputError(InputOptimizerError):
-    """Raised when input is invalid."""
-    def __init__(self, input_value):
-        self.input_value = input_value
-        self.message = f'Invalid input: {input_value}'
+class InvalidConfigurationError(InputOptimizerError):
+    """Exception raised for invalid configuration errors."""
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
+
+class MissingInputError(InputOptimizerError):
+    """Exception raised when input is missing."""
+    def __init__(self, input_name):
+        self.input_name = input_name
+        self.message = f"Input '{self.input_name}' is missing."
         super().__init__(self.message)
 
 class OptimizationError(InputOptimizerError):
-    """Raised when optimization fails."""
-    def __init__(self, algorithm, reason):
-        self.algorithm = algorithm
-        self.reason = reason
-        self.message = f'Optimization failed on {algorithm}: {reason}'
+    """Exception raised for errors during optimization."""
+    def __init__(self, details):
+        self.details = details
+        self.message = f"Optimization failed: {self.details}"
         super().__init__(self.message)
 
-class ConfigurationError(InputOptimizerError):
-    """Raised when configuration is invalid."""
-    def __init__(self, config_file):
-        self.config_file = config_file
-        self.message = f'Configuration error in: {config_file}'
+class UnsupportedInputTypeError(InputOptimizerError):
+    """Exception raised for unsupported input types."""
+    def __init__(self, input_type):
+        self.input_type = input_type
+        self.message = f"Unsupported input type: {self.input_type}"
         super().__init__(self.message)
-
-# Example usage function
-
-def handle_input(value):
-    if not isinstance(value, (int, float)):
-        raise InvalidInputError(value)
-    if value < 0:
-        raise OptimizationError('negative_check', 'Input cannot be negative')
-    return value * 2
