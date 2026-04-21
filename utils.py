@@ -1,20 +1,30 @@
-import time
-import requests
+import json
 
-class NetworkError(Exception):
-    pass
+class GameData:
+    def __init__(self, player_id, score, level):
+        self.player_id = player_id
+        self.score = score
+        self.level = level
 
-def retry_network_operation(url, max_retries=3, backoff_factor=2):
-    attempts = 0
-    while attempts < max_retries:
-        try:
-            response = requests.get(url)
-            response.raise_for_status()
-            return response.json()
-        except requests.RequestException as e:
-            attempts += 1
-            if attempts == max_retries:
-                raise NetworkError(f'Failed to fetch from {url} after {attempts} attempts') from e
-            wait_time = backoff_factor ** attempts
-            print(f'Retry attempt {attempts}/{max_retries} in {wait_time} seconds...')
-            time.sleep(wait_time)
+    def to_dict(self):
+        return {
+            'player_id': self.player_id,
+            'score': self.score,
+            'level': self.level
+        }
+
+def save_game_data(file_path, game_data):
+    with open(file_path, 'w') as file:
+        json_data = [data.to_dict() for data in game_data]
+        json.dump(json_data, file, indent=4)
+
+def load_game_data(file_path):
+    with open(file_path, 'r') as file:
+        json_data = json.load(file)
+        return [GameData(**data) for data in json_data]  
+
+if __name__ == '__main__':
+    sample_data = [GameData('player1', 150, 5), GameData('player2', 200, 6)]
+    save_game_data('game_data.json', sample_data)
+    loaded_data = load_game_data('game_data.json')
+    print(loaded_data)
