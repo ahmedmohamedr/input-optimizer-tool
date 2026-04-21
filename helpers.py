@@ -1,28 +1,41 @@
-import numpy as np
-import random
-
-def normalize_input(input_data):
-    max_val = np.max(input_data)
-    min_val = np.min(input_data)
-    return (input_data - min_val) / (max_val - min_val) if max_val > min_val else input_data
+from typing import List, Dict
 
 
-def random_sample(input_data, sample_size):
-    return random.sample(input_data, sample_size) if sample_size <= len(input_data) else input_data
+def average_fps(fps_list: List[float]) -> float:
+    """Calculate the average frames per second (FPS) from a list of FPS values.
+
+    Args:
+        fps_list (List[float]): A list of FPS values.
+
+    Returns:
+        float: The average FPS.
+    """
+    return sum(fps_list) / len(fps_list) if fps_list else 0.0
 
 
-def batch_process(inputs, batch_size):
-    return [inputs[i:i + batch_size] for i in range(0, len(inputs), batch_size)]
+def filter_high_fps(fps_data: Dict[str, List[float]], threshold: float) -> Dict[str, List[float]]:
+    """Filter FPS data by a defined threshold.
+
+    Args:
+        fps_data (Dict[str, List[float]]): A dictionary of game names and their corresponding FPS values.
+        threshold (float): The minimum FPS value to keep.
+
+    Returns:
+        Dict[str, List[float]]: Filtered dictionary with games meeting the FPS threshold.
+    """
+    return {game: [fps for fps in fps_values if fps >= threshold] 
+            for game, fps_values in fps_data.items()}
 
 
-def generate_statistics(input_data):
-    mean = np.mean(input_data)
-    median = np.median(input_data)
-    variance = np.var(input_data)
-    return {'mean': mean, 'median': median, 'variance': variance}
+def format_fps_stats(fps_data: Dict[str, List[float]]) -> str:
+    """Generate a formatted string of FPS statistics.
 
+    Args:
+        fps_data (Dict[str, List[float]]): A dictionary with game names and FPS values.
 
-def shuffle_data(input_data):
-    shuffled = input_data[:]
-    random.shuffle(shuffled)
-    return shuffled
+    Returns:
+        str: A formatted string representation of the FPS statistics.
+    """
+    stats = [f'{game}: Avg FPS = {average_fps(fps_values):.2f}' 
+             for game, fps_values in fps_data.items()]
+    return '\n'.join(stats)
