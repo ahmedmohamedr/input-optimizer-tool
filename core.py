@@ -1,29 +1,27 @@
-import time
-import requests
-from random import randint
+import random
+import json
 
-class NetworkError(Exception):
-    pass
+def generate_random_settings(num_settings=10):
+    settings = {}
+    for i in range(num_settings):
+        key = f'setting_{i}'
+        value = random.randint(1, 100)
+        settings[key] = value
+    return settings
 
-def retry_request(url, retries=5, backoff=1, status_forcelist=(500, 502, 503, 504)):
-    attempt = 0
-    while attempt < retries:
-        try:
-            response = requests.get(url)
-            if response.status_code in status_forcelist:
-                raise NetworkError(f"Status code: {response.status_code}")
-            return response.json()
-        except (requests.RequestException, NetworkError) as e:
-            attempt += 1
-            wait = backoff * (2 ** (attempt - 1)) + randint(0, 1000) / 1000
-            print(f"Attempt {attempt} failed: {e}. Retrying in {wait:.2f} seconds...")
-            time.sleep(wait)
-    raise NetworkError(f"All {retries} attempts failed for {url}")
-
-# Example usage
-if __name__ == '__main__':
+def load_settings_from_file(filepath):
     try:
-        result = retry_request('https://api.example.com/data')
-        print(result)
-    except NetworkError as e:
-        print(e)
+        with open(filepath, 'r') as file:
+            settings = json.load(file)
+            return settings
+    except Exception as e:
+        print(f'Error loading settings: {e}')
+        return None
+
+def save_settings_to_file(settings, filepath):
+    try:
+        with open(filepath, 'w') as file:
+            json.dump(settings, file, indent=4)
+            print('Settings saved successfully.')
+    except Exception as e:
+        print(f'Error saving settings: {e}')
