@@ -1,30 +1,31 @@
 import json
-
-class GameData:
-    def __init__(self, player_id, score, level):
-        self.player_id = player_id
-        self.score = score
-        self.level = level
-
-    def to_dict(self):
-        return {
-            'player_id': self.player_id,
-            'score': self.score,
-            'level': self.level
-        }
-
-def save_game_data(file_path, game_data):
-    with open(file_path, 'w') as file:
-        json_data = [data.to_dict() for data in game_data]
-        json.dump(json_data, file, indent=4)
+import os
 
 def load_game_data(file_path):
+    if not os.path.exists(file_path):
+        raise FileNotFoundError('Game data file not found.')
     with open(file_path, 'r') as file:
-        json_data = json.load(file)
-        return [GameData(**data) for data in json_data]  
+        try:
+            data = json.load(file)
+            return data
+        except json.JSONDecodeError:
+            raise ValueError('Invalid JSON format in game data file.')
 
-if __name__ == '__main__':
-    sample_data = [GameData('player1', 150, 5), GameData('player2', 200, 6)]
-    save_game_data('game_data.json', sample_data)
-    loaded_data = load_game_data('game_data.json')
-    print(loaded_data)
+
+def save_game_data(file_path, data):
+    directory = os.path.dirname(file_path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    with open(file_path, 'w') as file:
+        json.dump(data, file, indent=4)
+
+
+def update_game_data(file_path, new_data):
+    current_data = load_game_data(file_path)
+    current_data.update(new_data)
+    save_game_data(file_path, current_data)
+
+
+def format_game_data(data):
+    formatted = json.dumps(data, indent=4)
+    return formatted
