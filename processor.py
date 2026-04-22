@@ -1,31 +1,27 @@
 import json
-import random
+from helpers import calculate_metrics
+from validators import validate_input
 
-def optimize_input(user_inputs):
-    optimized = {key: optimize_value(value) for key, value in user_inputs.items()}
-    return json.dumps(optimized)
+class InputOptimizer:
+    def __init__(self, user_input):
+        self.user_input = user_input
+        self.optimized_input = None
 
+    def optimize(self):
+        if validate_input(self.user_input):
+            self.optimized_input = self.perform_optimization(self.user_input)
+            return self.optimized_input
+        raise ValueError('Invalid input data.')
 
-def optimize_value(value):
-    if isinstance(value, list):
-        return random.sample(value, min(len(value), 3))
-    elif isinstance(value, dict):
-        return {k: optimize_value(v) for k, v in value.items()}
-    return value
+    def perform_optimization(self, input_data):
+        return {key: self.optimize_value(value) for key, value in input_data.items()}
 
-
-def handle_input(user_inputs):
-    try:
-        optimized_data = optimize_input(user_inputs)
-        print("Optimized Input:", optimized_data)
-    except Exception as e:
-        print(f"Error processing input: {e}")
-
+    def optimize_value(self, value):
+        # Simulating some optimization logic
+        return value * 0.9 if isinstance(value, (int, float)) else value
 
 if __name__ == '__main__':
-    inputs = {
-        'settings': ['low', 'medium', 'high'],
-        'resolution': {'width': 1920, 'height': 1080},
-        'controls': ['keyboard', 'mouse', 'gamepad']
-    }
-    handle_input(inputs)
+    sample_input = {'graphics': 60, 'sound': 80, 'fps': 30}
+    optimizer = InputOptimizer(sample_input)
+    optimized_result = optimizer.optimize()
+    print(json.dumps(optimized_result, indent=4))
