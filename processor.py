@@ -1,27 +1,26 @@
 import json
-from helpers import calculate_metrics
-from validators import validate_input
+import numpy as np
 
-class InputOptimizer:
-    def __init__(self, user_input):
-        self.user_input = user_input
-        self.optimized_input = None
+def load_game_data(filepath):
+    with open(filepath, 'r') as file:
+        data = json.load(file)
+    return data
 
-    def optimize(self):
-        if validate_input(self.user_input):
-            self.optimized_input = self.perform_optimization(self.user_input)
-            return self.optimized_input
-        raise ValueError('Invalid input data.')
+def normalize_scores(data):
+    scores = [entry['score'] for entry in data if 'score' in entry]
+    max_score = np.max(scores)
+    min_score = np.min(scores)
+    for entry in data:
+        if 'score' in entry:
+            entry['normalized_score'] = (entry['score'] - min_score) / (max_score - min_score) if max_score > min_score else 0
+    return data
 
-    def perform_optimization(self, input_data):
-        return {key: self.optimize_value(value) for key, value in input_data.items()}
-
-    def optimize_value(self, value):
-        # Simulating some optimization logic
-        return value * 0.9 if isinstance(value, (int, float)) else value
+def filter_high_scores(data, threshold=0.7):
+    return [entry for entry in data if entry.get('normalized_score', 0) > threshold]
 
 if __name__ == '__main__':
-    sample_input = {'graphics': 60, 'sound': 80, 'fps': 30}
-    optimizer = InputOptimizer(sample_input)
-    optimized_result = optimizer.optimize()
-    print(json.dumps(optimized_result, indent=4))
+    file_path = 'game_data.json'
+    game_data = load_game_data(file_path)
+    normalized_data = normalize_scores(game_data)
+    high_scores = filter_high_scores(normalized_data)
+    print(high_scores)
