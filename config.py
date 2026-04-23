@@ -1,36 +1,33 @@
+import json
 import os
 
-class Config:
-    def __init__(self):
-        self.settings = {
-            'resolution': '1920x1080',
-            'fullscreen': True,
-            'volume': 75,
-            'brightness': 50,
-            'language': 'en'
-        }
+DEFAULT_CONFIG = {
+    'resolution': '1920x1080',
+    'fullscreen': True,
+    'volume': 75,
+    'controls': {
+        'move_left': 'A',
+        'move_right': 'D',
+        'jump': 'SPACE',
+        'shoot': 'F'
+    }
+}
 
-    def load_settings(self):
-        env_file = os.path.join(os.getcwd(), '.env')
-        if os.path.exists(env_file):
-            with open(env_file) as f:
-                for line in f:
-                    key, value = line.strip().split('=')
-                    if key in self.settings:
-                        self.settings[key] = self.parse_value(value)
+def load_configuration(file_path='config.json'):
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as file:
+            try:
+                user_config = json.load(file)
+                return merge_configs(DEFAULT_CONFIG, user_config)
+            except json.JSONDecodeError:
+                print('Error decoding JSON, using defaults.')  
+    return DEFAULT_CONFIG
 
-    @staticmethod
-    def parse_value(value):
-        if value.isdigit():
-            return int(value)
-        elif value.lower() in ['true', 'false']:
-            return value.lower() == 'true'
-        return value
 
-    def save_settings(self):
-        with open(os.path.join(os.getcwd(), '.env'), 'w') as f:
-            for key, value in self.settings.items():
-                f.write(f'{key}={value}\n')
-
-config = Config()
-config.load_settings()
+def merge_configs(defaults, user):
+    for key, value in user.items():
+        if isinstance(value, dict) and key in defaults:
+            defaults[key] = merge_configs(defaults[key], value)
+        else:
+            defaults[key] = value
+    return defaults
