@@ -1,52 +1,33 @@
-FPS_LIMIT = 60
-
-RESOLUTIONS = {
+SCREEN_RESOLUTIONS = {
+    '720p': (1280, 720),
     '1080p': (1920, 1080),
     '1440p': (2560, 1440),
     '4k': (3840, 2160),
-    '720p': (1280, 720)
+    '8k': (7680, 4320)
 }
 
-# Player input mappings
-PLAYER_INPUTS = {
-    'W': 'MOVE_UP',
-    'S': 'MOVE_DOWN',
-    'A': 'MOVE_LEFT',
-    'D': 'MOVE_RIGHT',
-    'SPACE': 'JUMP',
-    'CTRL': 'CROUCH'
+FPS_LIMITS = {
+    'low': 30,
+    'medium': 60,
+    'high': 120,
+    'ultra': 240
 }
 
-# Game state constants
-GAME_STATES = {
-    'LOADING': 0,
-    'PLAYING': 1,
-    'PAUSED': 2,
-    'GAME_OVER': 3
+GRAPHIC_SETTINGS = {
+    'low': 'Low quality textures and effects',
+    'medium': 'Balanced quality and performance',
+    'high': 'High quality textures and effects',
+    'ultra': 'Maximum settings with no performance compromise'
 }
 
-# Audio settings
-DEFAULT_VOLUME = 0.5
-MAX_VOLUME = 1.0
-MIN_VOLUME = 0.0
-
-# Control sensitivity settings
-MOUSE_SENSITIVITY = 1.0
-KEYBOARD_SENSITIVITY = 1.0
-
-# Graphics settings
-GRAPHICS_OPTIONS = {
-    'LOW': 1,
-    'MEDIUM': 2,
-    'HIGH': 3,
-    'ULTRA': 4
+DEFAULT_SETTINGS = {
+    'resolution': '1080p',
+    'fps_limit': 'high',
+    'graphics': 'medium'
 }
 
-# Define color codes
-COLORS = {
-    'WHITE': (255, 255, 255),
-    'BLACK': (0, 0, 0),
-    'RED': (255, 0, 0),
-    'GREEN': (0, 255, 0),
-    'BLUE': (0, 0, 255)
+ERROR_MESSAGES = {
+    'invalid_resolution': 'Resolution not supported!',
+    'invalid_fps': 'FPS limit must be one of: low, medium, high, ultra',
+    'invalid_graphic_setting': 'Graphic setting not recognized'
 }
