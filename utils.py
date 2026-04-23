@@ -1,36 +1,29 @@
 import json
-import os
-from typing import Any, Dict, Union
+from datetime import datetime
 
-def load_game_data(file_path: str) -> Union[Dict[str, Any], None]:
-    if not os.path.isfile(file_path):
-        print(f"File not found: {file_path}")
-        return None
 
+def load_game_data(file_path):
     with open(file_path, 'r') as file:
-        try:
-            data = json.load(file)
-        except json.JSONDecodeError:
-            print(f"Error decoding JSON from file: {file_path}")
-            return None
-    return data
+        return json.load(file)
 
-def save_game_data(file_path: str, data: Dict[str, Any]) -> None:
-    directory = os.path.dirname(file_path)
-    if directory and not os.path.exists(directory):
-        os.makedirs(directory)
 
+def save_game_data(file_path, data):
     with open(file_path, 'w') as file:
         json.dump(data, file, indent=4)
-    print(f"Data successfully saved to {file_path}")
 
-def update_game_score(data: Dict[str, Any], new_score: int) -> Dict[str, Any]:
-    current_score = data.get('score', 0)
-    data['score'] = max(current_score, new_score)
+
+def timestamp_data(data):
+    data['timestamp'] = datetime.utcnow().isoformat()
     return data
 
-# Example usage:
-# data = load_game_data('game_data.json')
-# if data:
-#     updated_data = update_game_score(data, 150)
-#     save_game_data('game_data.json', updated_data)
+
+def filter_character_data(data, min_level=1):
+    return [char for char in data['characters'] if char['level'] >= min_level]
+
+
+def get_high_score(data):
+    return max(item['score'] for item in data['scores'])
+
+
+def format_scoreboard(data):
+    return '\n'.join(f"{idx + 1}. {item['player_name']}: {item['score']}" for idx, item in enumerate(sorted(data['scores'], key=lambda x: x['score'], reverse=True)))
