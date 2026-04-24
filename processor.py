@@ -1,20 +1,26 @@
-class InputProcessor:
-    def __init__(self, config):
-        self.config = config
+import time
+import requests
 
-    def process_inputs(self, raw_inputs):
-        clean_inputs = self._cleanup(raw_inputs)
-        optimized_inputs = self._optimize(clean_inputs)
-        return optimized_inputs
+class NetworkOperationError(Exception):
+    pass
 
-    def _cleanup(self, inputs):
-        return [input.strip() for input in inputs if input]
+def retry_request(url, retries=5, delay=2):
+    for attempt in range(1, retries + 1):
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(f'Attempt {attempt}: {e}')
+            if attempt == retries:
+                raise NetworkOperationError(f'Failed to fetch {url} after {retries} attempts')
+            time.sleep(delay)
 
-    def _optimize(self, inputs):
-        return list(set(inputs))
-
+# Example use case
 if __name__ == '__main__':
-    sample_inputs = ['  jump', 'run ', '   ', 'run ', 'crouch']
-    processor = InputProcessor(config={})
-    optimized = processor.process_inputs(sample_inputs)
-    print(optimized)
+    url = 'https://api.example.com/data'
+    try:
+        data = retry_request(url)
+        print('Fetched data:', data)
+    except NetworkOperationError as e:
+        print(e)
