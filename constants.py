@@ -1,33 +1,49 @@
+FONT_SIZE = 14
 SCREEN_RESOLUTIONS = {
-    '720p': (1280, 720),
-    '1080p': (1920, 1080),
-    '1440p': (2560, 1440),
-    '4k': (3840, 2160),
-    '8k': (7680, 4320)
+    'HD': (1280, 720),
+    'FULL_HD': (1920, 1080),
+    'QUAD_HD': (2560, 1440),
+    '4K': (3840, 2160)
 }
 
-FPS_LIMITS = {
-    'low': 30,
-    'medium': 60,
-    'high': 120,
-    'ultra': 240
+# List of supported game genres
+GENRES = [
+    'Action',
+    'Adventure',
+    'Role-Playing',
+    'Simulation',
+    'Strategy',
+    'Puzzle',
+]
+
+# Default settings for input methods
+DEFAULT_CONTROLS = {
+    'move_forward': 'W',
+    'move_backward': 'S',
+    'turn_left': 'A',
+    'turn_right': 'D',
+    'jump': 'SPACE',
+    'crouch': 'CTRL',
 }
 
-GRAPHIC_SETTINGS = {
-    'low': 'Low quality textures and effects',
-    'medium': 'Balanced quality and performance',
-    'high': 'High quality textures and effects',
-    'ultra': 'Maximum settings with no performance compromise'
+# Game speeds in frames per second
+GAME_SPEEDS = {
+    'SLOW': 30,
+    'NORMAL': 60,
+    'FAST': 120,
 }
 
-DEFAULT_SETTINGS = {
-    'resolution': '1080p',
-    'fps_limit': 'high',
-    'graphics': 'medium'
-}
+# Sensitivity settings for mouse
+MOUSE_SENSITIVITIES = [
+    0.5,
+    1.0,
+    1.5,
+    2.0,
+]
 
-ERROR_MESSAGES = {
-    'invalid_resolution': 'Resolution not supported!',
-    'invalid_fps': 'FPS limit must be one of: low, medium, high, ultra',
-    'invalid_graphic_setting': 'Graphic setting not recognized'
+# Network settings for multiplayer
+NETWORK_SETTINGS = {
+    'MAX_PLAYERS': 16,
+    'TIMEOUT': 30,
+    'PING_LIMIT': 100,
 }
