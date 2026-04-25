@@ -1,46 +1,38 @@
 # Input Optimizer Tool
 
-The Input Optimizer Tool enhances gaming performance by optimizing input settings for a variety of games. This Python-based application streamlines keyboard and mouse configurations, ensuring gamers achieve maximum responsiveness and comfort.
+The Input Optimizer Tool is a Python-based utility designed to enhance gaming performance by optimizing key mapping and mouse input settings. Effortlessly tweak your controls to maximize efficiency and responsiveness in your favorite games.
 
 ## Features
 
-- **Customizable Input Profiles**: Create and switch between tailored configurations for different games with ease.
-- **Sensitivity Adjustment**: Fine-tune mouse sensitivity settings to enhance precision during gameplay.
-- **Macro Support**: Record and manage macros for complex input combinations, increasing efficiency in competitive scenarios.
-- **Performance Statistics**: Monitor and analyze input latency and performance metrics to identify areas for improvement.
+- **Dynamic Key Mapping:** Automatically adjust key bindings based on gameplay styles, allowing easy transitions between different gaming genres.
+- **Mouse Sensitivity Calibration:** Fine-tune your mouse sensitivity for a smoother and more accurate aiming experience in first-person shooters and other precision-demanding games.
+- **In-Game Overlay:** Access real-time statistics on input latency and responsiveness while gaming, enabling immediate adjustments for optimal performance.
+- **User-Friendly Interface:** Intuitive GUI that allows players to configure settings without having to delve into complex coding.
 
 ## Installation
 
-To get started with the Input Optimizer Tool, ensure you have Python 3.x installed, then run the following commands:
+To install Input Optimizer Tool, clone the repository and install the necessary dependencies:
 
 ```bash
-git clone https://github.com/Developer/input-optimizer-tool.git
+git clone https://github.com/developer/input-optimizer-tool.git
 cd input-optimizer-tool
 pip install -r requirements.txt
 ```
 
+Make sure you have Python 3.8 or higher installed on your machine.
+
 ## Basic Usage Example
 
-Once installed, you can quickly set up an input profile by executing:
+Once installed, run the tool with the following command to launch the GUI:
 
 ```bash
-python main.py --create-profile "MyGameProfile"
+python input_optimizer.py
 ```
 
-To adjust mouse sensitivity, use:
+From the interface, easily set your preferred key mappings and mouse settings. Adjust the sliders for sensitivity and visualize the changes in real-time. Save your configuration and apply it directly to your games for an improved gaming experience.
 
-```bash
-python main.py --set-sensitivity 800
-```
+## License
 
-For recording a macro, simply run:
+![MIT License](https://img.shields.io/badge/license-MIT-green)
 
-```bash
-python main.py --record-macro "MacroName"
-```
-
-This will save your macro in the designated profile, allowing for easy access during competitive play.
-
-[![MIT License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
-
-Feel free to explore the code, submit issues, and contribute to making the Input Optimizer Tool even better for gamers everywhere. Happy gaming!
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
