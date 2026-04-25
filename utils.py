@@ -1,30 +1,23 @@
-import time
-import random
-import requests
+def optimize_input(user_input):
+    try:
+        if not isinstance(user_input, str):
+            raise TypeError('Input must be a string.')
+        if len(user_input) == 0:
+            raise ValueError('Input cannot be an empty string.')
+        optimized = user_input.strip().lower()
+        if optimized == '':
+            raise ValueError('Input cannot be just whitespace.')
+        return optimized
+    except TypeError as te:
+        return f'Error: {te}'
+    except ValueError as ve:
+        return f'Error: {ve}'
+    except Exception as e:
+        return f'Unexpected error: {e}'
 
-def retry_request(url, max_attempts=5, delay=2):
-    attempts = 0
-    while attempts < max_attempts:
-        try:
-            response = requests.get(url)
-            response.raise_for_status()  # Raise an error for bad responses
-            return response.json()  # Return the JSON content of the response
-        except requests.exceptions.HTTPError as http_err:
-            print(f'HTTP error occurred: {http_err}')
-        except requests.exceptions.ConnectionError as conn_err:
-            print(f'Connection error occurred: {conn_err}')
-        except Exception as err:
-            print(f'An error occurred: {err}')
-        attempts += 1
-        time.sleep(delay)
-        delay *= 2  # Exponential backoff
-    return None  # Return None after exhausting attempts
-
-# Example usage
 if __name__ == '__main__':
-    url = 'https://api.example.com/data'
-    result = retry_request(url)
-    if result:
-        print('Data retrieved:', result)
-    else:
-        print('Failed to retrieve data after multiple attempts.')
+    print(optimize_input('  Hello World!  '))  # expected output: 'hello world!'
+    print(optimize_input(''))  # expected output: 'Error: Input cannot be an empty string.'
+    print(optimize_input(123))  # expected output: 'Error: Input must be a string.'
+    print(optimize_input('    '))  # expected output: 'Error: Input cannot be just whitespace.'
+    
