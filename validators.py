@@ -1,27 +1,42 @@
-import re
-
-def is_valid_username(username):
-    return re.match("^[a-zA-Z0-9_]{3,16}$", username) is not None
+from typing import Any, Dict
 
 
-def is_valid_password(password):
-    return (len(password) >= 8 and 
-            any(char.isdigit() for char in password) and 
-            any(char.isupper() for char in password) and 
-            any(char.islower() for char in password))
+class Validator:
+    def __init__(self, rules: Dict[str, Any]) -> None:
+        """Initializes Validator with specified rules.
+
+        Args:
+            rules (Dict[str, Any]): A dictionary containing validation rules for parameters.
+        """
+        self.rules = rules
+
+    def validate(self, data: Dict[str, Any]) -> bool:
+        """Validates the provided data against the rules.
+
+        Args:
+            data (Dict[str, Any]): Data to validate.
+
+        Returns:
+            bool: True if validation is successful, otherwise False.
+        """
+        for key, rule in self.rules.items():
+            if key not in data:
+                print(f'Missing parameter: {key}')
+                return False
+            if not rule(data[key]):
+                print(f'Invalid parameter: {key} with value {data[key]}')
+                return False
+        return True
 
 
-def is_valid_email(email):
-    regex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-    return re.match(regex, email) is not None
-
-
-def is_valid_game_id(game_id):
-    return isinstance(game_id, int) and game_id > 0
-
-
+# Example usage:
 if __name__ == '__main__':
-    print(is_valid_username('Player1'))  # True
-    print(is_valid_password('P@ssw0rd'))  # True
-    print(is_valid_email('test@example.com'))  # True
-    print(is_valid_game_id(100))  # True
+    rules = {
+        'username': lambda x: isinstance(x, str) and len(x) > 3,
+        'age': lambda x: isinstance(x, int) and 0 < x < 120
+    }
+    validator = Validator(rules)
+    data_to_validate = {'username': 'player1', 'age': 25}
+    print(validator.validate(data_to_validate))  # Output: True
+    data_to_validate['age'] = 'invalid'
+    print(validator.validate(data_to_validate))  # Output: False
