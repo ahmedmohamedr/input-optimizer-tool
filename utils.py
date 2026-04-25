@@ -1,29 +1,30 @@
-import json
-from datetime import datetime
+import time
+import random
+import requests
 
+def retry_request(url, max_attempts=5, delay=2):
+    attempts = 0
+    while attempts < max_attempts:
+        try:
+            response = requests.get(url)
+            response.raise_for_status()  # Raise an error for bad responses
+            return response.json()  # Return the JSON content of the response
+        except requests.exceptions.HTTPError as http_err:
+            print(f'HTTP error occurred: {http_err}')
+        except requests.exceptions.ConnectionError as conn_err:
+            print(f'Connection error occurred: {conn_err}')
+        except Exception as err:
+            print(f'An error occurred: {err}')
+        attempts += 1
+        time.sleep(delay)
+        delay *= 2  # Exponential backoff
+    return None  # Return None after exhausting attempts
 
-def load_game_data(file_path):
-    with open(file_path, 'r') as file:
-        return json.load(file)
-
-
-def save_game_data(file_path, data):
-    with open(file_path, 'w') as file:
-        json.dump(data, file, indent=4)
-
-
-def timestamp_data(data):
-    data['timestamp'] = datetime.utcnow().isoformat()
-    return data
-
-
-def filter_character_data(data, min_level=1):
-    return [char for char in data['characters'] if char['level'] >= min_level]
-
-
-def get_high_score(data):
-    return max(item['score'] for item in data['scores'])
-
-
-def format_scoreboard(data):
-    return '\n'.join(f"{idx + 1}. {item['player_name']}: {item['score']}" for idx, item in enumerate(sorted(data['scores'], key=lambda x: x['score'], reverse=True)))
+# Example usage
+if __name__ == '__main__':
+    url = 'https://api.example.com/data'
+    result = retry_request(url)
+    if result:
+        print('Data retrieved:', result)
+    else:
+        print('Failed to retrieve data after multiple attempts.')
