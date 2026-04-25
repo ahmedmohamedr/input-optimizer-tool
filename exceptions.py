@@ -1,25 +1,26 @@
-class InvalidInputError(Exception):
-    """Exception raised for invalid inputs in the optimizer tool."""
+class InputOptimizerError(Exception):
+    """Base class for exceptions in the input optimizer tool."""
+    pass
+
+class ConfigurationError(InputOptimizerError):
+    """Exception raised for errors in the configuration."""
     def __init__(self, message: str) -> None:
         super().__init__(message)
-        self.message = message
 
-class OptimizationError(Exception):
-    """Exception raised when optimization fails."""
-    def __init__(self, message: str) -> None:
+class ValidationError(InputOptimizerError):
+    """Exception raised for validation errors."""
+    def __init__(self, message: str, errors: list) -> None:
         super().__init__(message)
-        self.message = message
+        self.errors = errors
 
-class ConfigurationError(Exception):
-    """Exception raised for configuration-related issues."""
-    def __init__(self, message: str) -> None:
-        super().__init__(message)
-        self.message = message
+    def __str__(self) -> str:
+        return f'{super().__str__()}: {self.errors}'
 
-class ResourceLimitError(Exception):
-    """Exception raised when resource limits are exceeded."""
-    def __init__(self, limit: str, value: int) -> None:
-        message = f'Resource limit exceeded: {limit} with value {value}'
+class OptimizationError(InputOptimizerError):
+    """Exception raised during optimization process."""
+    def __init__(self, message: str, code: int) -> None:
         super().__init__(message)
-        self.limit = limit
-        self.value = value
+        self.code = code
+
+    def __str__(self) -> str:
+        return f'{super().__str__()} (Error Code: {self.code})'
