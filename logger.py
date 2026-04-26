@@ -1,24 +1,37 @@
 import logging
-from logging.handlers import RotatingFileHandler
 
-def setup_logger(log_file='app.log', max_bytes=10*1024*1024, backup_count=5):
-    logger = logging.getLogger('input_optimizer')
-    logger.setLevel(logging.DEBUG)
+class CustomLogger:
+    def __init__(self, name: str):
+        self.logger = logging.getLogger(name)
+        self.logger.setLevel(logging.DEBUG)
+        handler = logging.FileHandler('app.log')
+        handler.setLevel(logging.DEBUG)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        self.logger.addHandler(handler)
 
-    handler = RotatingFileHandler(log_file, maxBytes=max_bytes, backupCount=backup_count)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
+    def debug(self, message: str):
+        self.logger.debug(message)
 
-    if not logger.hasHandlers():
-        logger.addHandler(handler)
+    def info(self, message: str):
+        self.logger.info(message)
 
-    return logger
+    def warning(self, message: str):
+        self.logger.warning(message)
 
-# Example of how to use the logger
+    def error(self, message: str):
+        self.logger.error(message)
+
+    def critical(self, message: str):
+        self.logger.critical(message)
+
+    def exception(self, message: str):
+        self.logger.exception(message)
+
 if __name__ == '__main__':
-    log = setup_logger()
-    log.debug('Debugging information')
-    log.info('Informational message')
-    log.warning('A warning message')
-    log.error('An error has occurred')
-    log.critical('Critical error, immediate attention needed')
+    logger = CustomLogger('MyApp')
+    try:
+        x = 1 / 0
+    except ZeroDivisionError:
+        logger.exception('Attempted to divide by zero')
+    logger.info('Logging initialized successfully')
