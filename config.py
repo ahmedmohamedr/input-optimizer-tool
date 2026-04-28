@@ -1,40 +1,26 @@
 import json
 import os
 
-DEFAULT_CONFIG = {
-    'resolution': '1920x1080',
-    'fullscreen': True,
-    'volume': 0.75,
-    'sensitivity': 1.5,
-    'hotkeys': {
-        'move_up': 'W',
-        'move_down': 'S',
-        'move_left': 'A',
-        'move_right': 'D',
-        'shoot': 'SPACE',
-    }
-}
-
 class ConfigLoader:
-    def __init__(self, config_file='config.json'):
-        self.config_file = config_file
-        self.config = self.load_config()
+    def __init__(self, default_config_path, user_config_path):
+        self.default_config = self.load_config(default_config_path)
+        self.user_config = self.load_config(user_config_path)
+        self.final_config = self.merge_configs()
 
-    def load_config(self):
-        if os.path.exists(self.config_file):
-            with open(self.config_file, 'r') as file:
-                user_config = json.load(file)
-            return {**DEFAULT_CONFIG, **user_config}
-        return DEFAULT_CONFIG
+    def load_config(self, path):
+        if not os.path.exists(path):
+            return {}
+        with open(path, 'r') as file:
+            return json.load(file)
 
-    def save_config(self):
-        with open(self.config_file, 'w') as file:
-            json.dump(self.config, file, indent=4)
+    def merge_configs(self):
+        merged = self.default_config.copy()  # Start with defaults
+        merged.update(self.user_config)  # Override with user settings
+        return merged
 
-    def update_setting(self, key, value):
-        if key in self.config:
-            self.config[key] = value
-            self.save_config()
+    def get(self, key, default=None):
+        return self.final_config.get(key, default)
 
-# Usage: loader = ConfigLoader() 
-# loader.update_setting('volume', 0.85)
+# Example usage:
+# loader = ConfigLoader('default_config.json', 'user_config.json')
+# print(loader.get('key_name'))
