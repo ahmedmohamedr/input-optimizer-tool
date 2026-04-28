@@ -1,38 +1,30 @@
 import logging
 
-class Logger:
+class GameLogger:
     def __init__(self, name):
         self.logger = logging.getLogger(name)
         self.logger.setLevel(logging.DEBUG)
-        console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.DEBUG)
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.DEBUG)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        console_handler.setFormatter(formatter)
-        self.logger.addHandler(console_handler)
+        ch.setFormatter(formatter)
+        self.logger.addHandler(ch)
 
-    def debug(self, message):
-        self.logger.debug(message)
+    def debug(self, msg):
+        self.logger.debug(msg)
 
-    def info(self, message):
-        self.logger.info(message)
+    def info(self, msg):
+        self.logger.info(msg)
 
-    def warning(self, message):
-        self.logger.warning(message)
+    def warning(self, msg):
+        self.logger.warning(msg)
 
-    def error(self, message):
-        self.logger.error(message)
+    def error(self, msg):
+        self.logger.error(msg)
 
-    def critical(self, message):
-        self.logger.critical(message)
+    def critical(self, msg):
+        self.logger.critical(msg)
 
-if __name__ == '__main__':
-    log = Logger('GameInputValidator')
-    log.info('Logger has been initiated.')
-    
-    # Example input validation
-    inputs = ['valid_input', '', 'another_valid_input', None]
-    for i, user_input in enumerate(inputs):
-        if not isinstance(user_input, str) or not user_input:
-            log.warning(f'Input {i} is invalid: {user_input}')
-        else:
-            log.info(f'Input {i} is valid: {user_input}')
+# Usage example
+# logger = GameLogger('my_game')
+# logger.info('Game started successfully.')
