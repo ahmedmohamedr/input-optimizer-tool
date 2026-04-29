@@ -1,39 +1,33 @@
-GAMING_DATA_VERSION = '1.0'
+GAMEMODES = {'casual': 'Easy', 'competitive': 'Hard', 'hardcore': 'Extreme'}
 
-GAME_MODES = {
-    'single_player': 'A mode for solo adventures',
-    'multiplayer': 'Compete or cooperate with others',
-    'co_op': 'Work together towards common goals',
+DEFAULT_SETTINGS = {
+    'resolution': (1920, 1080),
+    'volume': 75,
+    'brightness': 50,
+    'fullscreen': True,
 }
 
-KEY_BINDINGS = {
-    'move_up': 'W',
-    'move_down': 'S',
+KEYBINDINGS = {
     'move_left': 'A',
     'move_right': 'D',
-    'shoot': 'SPACE',
-    'pause': 'ESC',
+    'jump': 'SPACE',
+    'crouch': 'CTRL',
+    'shoot': 'LEFT_MOUSE',
 }
 
-MAX_PLAYERS = 16
+FPS_LIMITS = [30, 60, 120, 144]
 
-DIFFICULTY_LEVELS = ['easy', 'medium', 'hard', 'extreme']
+def get_game_mode_description(mode):
+    return GAMEMODES.get(mode, 'Unknown mode')
 
-SOUND_SETTINGS = {
-    'master_volume': 100,
-    'music_volume': 70,
-    'effects_volume': 80,
-}
 
-GRAPHICS_SETTINGS = {
-    'resolution': (1920, 1080),
-    'fullscreen': True,
-    'texture_quality': 'high',
-}
+def get_default_setting(setting):
+    return DEFAULT_SETTINGS.get(setting, 'Not Found')
 
-PLAYER_CHARACTER_CLASSES = ['warrior', 'mage', 'archer', 'rogue']
 
-ITEM_RARITIES = ['common', 'uncommon', 'rare', 'epic', 'legendary']
+def is_valid_key_binding(key):
+    return key in KEYBINDINGS.values()
 
-FPS_LIMIT = 60
 
+def is_valid_fps_limit(limit):
+    return limit in FPS_LIMITS
