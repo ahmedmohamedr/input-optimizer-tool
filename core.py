@@ -1,23 +1,32 @@
 import time
-import numpy as np
+import requests
 
-class PerformanceOptimizer:
-    def __init__(self, data):
-        self.data = np.array(data)
+class NetworkOperation:
+    def __init__(self, max_retries=5, backoff_factor=1):
+        self.max_retries = max_retries
+        self.backoff_factor = backoff_factor
 
-    def optimize(self):
-        # Vectorized operation for speed
-        start_time = time.time()
-        optimized_data = self._process_data(self.data)
-        elapsed_time = time.time() - start_time
-        print(f'Optimization completed in {elapsed_time:.4f} seconds')
-        return optimized_data
+    def retry(self, func, *args, **kwargs):
+        attempt = 0
+        while attempt < self.max_retries:
+            try:
+                return func(*args, **kwargs)
+            except (requests.Timeout, requests.ConnectionError) as e:
+                attempt += 1
+                wait = self.backoff_factor * (2 ** (attempt - 1))
+                print(f'Attempt {attempt} failed: {e}. Retrying in {wait} seconds...')
+                time.sleep(wait)
+        raise Exception('Max retries exceeded')
 
-    def _process_data(self, data):
-        return data[data > 0] * 10  # Example of optimization
+    def fetch_data(self, url):
+        response = self.retry(requests.get, url)
+        response.raise_for_status()
+        return response.json()
 
 if __name__ == '__main__':
-    sample_data = list(range(-10, 10))  # Sample input data
-    optimizer = PerformanceOptimizer(sample_data)
-    optimized_result = optimizer.optimize()
-    print(optimized_result)
+    n_op = NetworkOperation()
+    try:
+        data = n_op.fetch_data('https://api.example.com/data')
+        print(data)
+    except Exception as e:
+        print(f'Error fetching data: {e}')
