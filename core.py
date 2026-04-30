@@ -1,32 +1,32 @@
-import time
-import requests
+import json
+import os
 
-class NetworkOperation:
-    def __init__(self, max_retries=5, backoff_factor=1):
-        self.max_retries = max_retries
-        self.backoff_factor = backoff_factor
+class InputOptimizer:
+    def __init__(self, config_file):
+        self.config_file = config_file
+        self.settings = self.load_config()
 
-    def retry(self, func, *args, **kwargs):
-        attempt = 0
-        while attempt < self.max_retries:
-            try:
-                return func(*args, **kwargs)
-            except (requests.Timeout, requests.ConnectionError) as e:
-                attempt += 1
-                wait = self.backoff_factor * (2 ** (attempt - 1))
-                print(f'Attempt {attempt} failed: {e}. Retrying in {wait} seconds...')
-                time.sleep(wait)
-        raise Exception('Max retries exceeded')
-
-    def fetch_data(self, url):
-        response = self.retry(requests.get, url)
-        response.raise_for_status()
-        return response.json()
+    def load_config(self):
+        if not os.path.exists(self.config_file):
+            raise FileNotFoundError(f'Config file {self.config_file} not found.') 
+        try:
+            with open(self.config_file, 'r') as file:
+                return json.load(file)
+        except json.JSONDecodeError:
+            raise ValueError('Configuration file is not valid JSON.')
+    
+    def process_input(self, user_input):
+        if not isinstance(user_input, str):
+            raise TypeError('Input must be a string.')
+        elif len(user_input) == 0:
+            raise ValueError('Input cannot be an empty string.')
+        # Further processing logic goes here, e.g. optimization
+        print(f'Processing input: {user_input}')
 
 if __name__ == '__main__':
-    n_op = NetworkOperation()
+    optimizer = InputOptimizer('config.json')
     try:
-        data = n_op.fetch_data('https://api.example.com/data')
-        print(data)
+        user_input = 'example input'
+        optimizer.process_input(user_input)
     except Exception as e:
-        print(f'Error fetching data: {e}')
+        print(f'Error: {e}')
