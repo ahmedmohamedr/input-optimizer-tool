@@ -1,44 +1,23 @@
-import json
-import os
-import logging
+import time
+import random
+import requests
 
-logging.basicConfig(level=logging.INFO)
+class NetworkError(Exception):
+    pass
 
-def load_config(file_path):
-    if not os.path.isfile(file_path):
-        logging.error(f"Config file not found: {file_path}")
-        raise FileNotFoundError(f"Config file not found: {file_path}")
-    try:
-        with open(file_path, 'r') as config_file:
-            config = json.load(config_file)
-            return config
-    except json.JSONDecodeError as e:
-        logging.error(f"JSON decode error: {e}")
-        raise ValueError(f"Invalid JSON in config file: {file_path}")
-    except Exception as e:
-        logging.error(f"An unexpected error occurred: {e}")
-        raise
+def retry_request(url, retries=3, delay=1):
+    for attempt in range(retries):
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(f"Attempt {attempt + 1} failed: {e}")
+            if attempt < retries - 1:
+                backoff = delay * (2 ** attempt) + random.uniform(0, 1)
+                time.sleep(backoff)
+            else:
+                raise NetworkError(f"Max retries exceeded for {url}")
 
-
-def validate_config(config):
-    required_keys = ['resolution', 'fullscreen', 'volume']
-    for key in required_keys:
-        if key not in config:
-            logging.error(f"Missing required config key: {key}")
-            raise KeyError(f"Missing required config key: {key}")
-        if not isinstance(config[key], (str, bool, int)):
-            logging.error(f"Invalid type for config key '{key}': {type(config[key])}")
-            raise TypeError(f"Invalid type for config key '{key}': {type(config[key])}")
-
-
-def main():
-    try:
-        config = load_config('config.json')
-        validate_config(config)
-        logging.info("Configuration loaded and validated successfully!")
-    except Exception as e:
-        logging.critical(f"Failed to load config: {e}")
-
-
-if __name__ == '__main__':
-    main()
+# Example usage:
+# data = retry_request('https://api.example.com/data')
