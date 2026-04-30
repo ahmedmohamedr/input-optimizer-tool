@@ -1,47 +1,24 @@
 import logging
+import os
+from logging.handlers import RotatingFileHandler
 
-class CustomFormatter(logging.Formatter):
-    def format(self, record):
-        log_fmt = "%(asctime)s - %(levelname)s - %(message)s"
-        formatter = logging.Formatter(log_fmt)
-        return formatter.format(record)
+def setup_logger(log_file='app.log', max_bytes=5*1024*1024, backup_count=3):
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
 
-class Logger:
-    def __init__(self, name, level=logging.INFO):
-        self.logger = logging.getLogger(name)
-        self.logger.setLevel(level)
-        ch = logging.StreamHandler()
-        ch.setLevel(level)
-        ch.setFormatter(CustomFormatter())
-        self.logger.addHandler(ch)
+    # Create a directory for logs if it doesn't exist
+    if not os.path.exists('logs'):
+        os.makedirs('logs')
 
-    def debug(self, message):
-        self.logger.debug(message)
+    # Create a rotating file handler
+    handler = RotatingFileHandler(os.path.join('logs', log_file), maxBytes=max_bytes, backupCount=backup_count)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
 
-    def info(self, message):
-        self.logger.info(message)
+    logger.addHandler(handler)
+    return logger
 
-    def warning(self, message):
-        self.logger.warning(message)
-
-    def error(self, message):
-        self.logger.error(message)
-
-    def critical(self, message):
-        self.logger.critical(message)
-
-    def exception(self, message):
-        self.logger.exception(message)
-
-if __name__ == '__main__':
-    logger = Logger('input_optimizer')
-    try:
-        logger.info('Starting the logger...')
-        # Simulate a warning
-        x = 5 / 0  # This will raise an exception
-    except ZeroDivisionError as e:
-        logger.error(f'Error occurred: {e}')
-    except Exception as e:
-        logger.exception(f'Unexpected error: {e}')
-    finally:
-        logger.info('Logging session ends.')
+logger = setup_logger()
+logger.info('Logger setup complete')
+logger.debug('This is a debug message')
+logger.error('This is an error message')
